@@ -23,7 +23,7 @@
          SECTION 1: INTRO ENVELOPE VIDEO
          ========================================================================== -->
     <div id="intro-container">
-        <video id="invite-video" class="intro-video" src="starter-envelope.mp4" muted playsinline
+        <video id="invite-video" class="intro-video" src="starter-envelope.mp4" muted playsinline webkit-playsinline
             preload="auto"></video>
     </div>
 
@@ -33,11 +33,9 @@
     <section class="fullscreen-video-section hero-stacked-layout">
         <div class="fullscreen-video-bg">
             <video class="bg-video ambient-video full-bg-vid" src="WhatsApp Video 2026-09-14 at 1.38.01 AM.mp4" muted
-                loop playsinline autoplay></video>
+                loop playsinline webkit-playsinline autoplay preload="auto"></video>
             <div class="video-fog-overlay light-fog creamy-vignette-fog"></div>
         </div>
-
-        
     </section>
 
     <!-- Main Content Flow interleaved with Full-Screen Visuals -->
@@ -391,22 +389,26 @@
             let hasStarted = false;
 
             const dismissIntro = () => {
-                introContainer.classList.add("fade-out");
+                if (introContainer) {
+                    introContainer.classList.add("fade-out");
+                }
                 window.scrollTo(0, 0);
             };
 
-            introContainer.addEventListener("click", () => {
-                if (!hasStarted) {
-                    hasStarted = true;
-                    introVideo.play().catch(() => {
+            if (introContainer && introVideo) {
+                introContainer.addEventListener("click", () => {
+                    if (!hasStarted) {
+                        hasStarted = true;
+                        introVideo.play().catch(() => {
+                            dismissIntro();
+                        });
+                    } else {
                         dismissIntro();
-                    });
-                } else {
-                    dismissIntro();
-                }
-            });
+                    }
+                });
 
-            introVideo.addEventListener("ended", dismissIntro);
+                introVideo.addEventListener("ended", dismissIntro);
+            }
 
             // --- WhatsApp RSVP Button Setup ---
             const ownerPhoneNumber = "212720237636";
@@ -414,8 +416,8 @@
 
             if (whatsappBtn) {
                 const messageText = encodeURIComponent(
-                    "Hello! I am confirming that I accept the invitation to the Nikkah ceremony of Taib & Shaimae on 05/10/2026. Looking forward to celebrating with you! ✨\n\n" +
-                    "مرحباً! أؤكد قبول الدعوة لحضور حفل زفاف طيب و شيماء بتاريخ 05/10/2026. في أمان الله."
+                    "Hello! I am confirming that I accept the invitation to the Shaimae ceremony of Taib & Shaimae on 05/10/2026. Looking forward to celebrating with you! ✨\n\n" +
+                    "مرحباً! أؤكد قبول الدعوة لحضور حفل زفاف طيب وشيماء بتاريخ 05/10/2026. في أمان الله."
                 );
                 whatsappBtn.href = `https://wa.me/${ownerPhoneNumber}?text=${messageText}`;
             }
@@ -424,6 +426,7 @@
             const canvases = document.querySelectorAll('.scratch-canvas');
             canvases.forEach(canvas => {
                 const ctx = canvas.getContext('2d');
+                if (!ctx) return;
 
                 const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
                 gradient.addColorStop(0, '#d4af37');   // Classic Gold
@@ -464,8 +467,8 @@
                 canvas.addEventListener('mousemove', (e) => { if (!isDrawing) return; const p = getPos(e, canvas); scratch(p.x, p.y); });
                 window.addEventListener('mouseup', () => isDrawing = false);
 
-                canvas.addEventListener('touchstart', (e) => { isDrawing = true; const p = getPos(e, canvas); scratch(p.x, p.y); });
-                canvas.addEventListener('touchmove', (e) => { if (!isDrawing) return; const p = getPos(e, canvas); scratch(p.x, p.y); });
+                canvas.addEventListener('touchstart', (e) => { isDrawing = true; const p = getPos(e, canvas); scratch(p.x, p.y); }, { passive: true });
+                canvas.addEventListener('touchmove', (e) => { if (!isDrawing) return; const p = getPos(e, canvas); scratch(p.x, p.y); }, { passive: true });
                 canvas.addEventListener('touchend', () => isDrawing = false);
             });
 
